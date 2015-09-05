@@ -30,37 +30,37 @@ public class ColorizePlugin implements Plugin
   // Commands we accept from the input window...
   // (can be changed to anything you want but must be lower-case!)
   public static final String C_PLAY = "cplay"; // Controls text-playback from YahCoLoRiZe
-	public static final String C_CHAN = "cchan"; // Remotely change the channel (room) text is sent to
-	public static final String C_TIME = "ctime"; // Remotely change text playback speed (in milliseconds)
-	public static final String C_SEND = "cx"; // Send a line of text to YahCoLoRiZe for processing
-	public static final String C_HELP = "chelp"; // Echo a list of commands
+  public static final String C_CHAN = "cchan"; // Remotely change the channel (room) text is sent to
+  public static final String C_TIME = "ctime"; // Remotely change text playback speed (in milliseconds)
+  public static final String C_SEND = "cx"; // Send a line of text to YahCoLoRiZe for processing
+  public static final String C_HELP = "chelp"; // Echo a list of commands
 
   // C_PLAY argument strings
-	public static final String A_START = "start"; // Starts/restarts text-playback
-	public static final String A_STOP = "stop"; // Stops text-playback
-	public static final String A_PAUSE = "pause"; // Pauses text-playback
-	public static final String A_RESUME = "resume"; // Resumes text-playback
+  public static final String A_START = "start"; // Starts/restarts text-playback
+  public static final String A_STOP = "stop"; // Stops text-playback
+  public static final String A_PAUSE = "pause"; // Pauses text-playback
+  public static final String A_RESUME = "resume"; // Resumes text-playback
 
   // Max # of bytes to send/receive in the data field of COLORIZENETSTRUCT
   // (Can't be changed!)
-	public static final int CNS_DATALEN = 2048;
-	
+  public static final int CNS_DATALEN = 2048;
+  
   // Max # of bytes to send/receive in the ChanNick field of COLORIZENETSTRUCT
   // (Can't be changed!)
-	public static final int CNS_CHANNICKLEN = 512;
-	
+  public static final int CNS_CHANNICKLEN = 512;
+  
   // COLORIZENETSTRUCT, allocate memory of 8+(4*7)+CNS_DATALEN+CNS_CHANNICKLEN bytes
   // to marshal it for both 32 and 64 bit platforms. Add 4 for the 32-bit pointer to
-	// a constructor at the end of the structure which YahCoLoRiZe has...
+  // a constructor at the end of the structure which YahCoLoRiZe has...
   public static final int CNS_SIZE = 8+(4*7)+CNS_DATALEN+CNS_CHANNICKLEN;
   
   public static final int CDS_SIZE = 12; // this is always 12 (for all platforms) because YahCoLoRiZe is 32-bit!
 
   // Registered with RegisterWindowsMessage()
-	private static final String YC_SIGNITURE = "WM_ColorizeNet";
+  private static final String YC_SIGNITURE = "WM_ColorizeNet";
 
-	// YahCoLoRiZe class and window names used to find its handle
-	public static final String YC_CLASSNAME = "TDTSColor";
+  // YahCoLoRiZe class and window names used to find its handle
+  public static final String YC_CLASSNAME = "TDTSColor";
   public static final String YC_WINDOWNAME = "YahCoLoRiZe";
   
   // SendMessageTimeout flags
@@ -72,18 +72,18 @@ public class ColorizePlugin implements Plugin
   //private static final int SMTO_ERRORONEXIT = 0x0020;
 
   // Remote commands
-	public static final int REMOTE_COMMAND_START = 0;
-	public static final int REMOTE_COMMAND_STOP = 1;
-	public static final int REMOTE_COMMAND_PAUSE = 2;
-	public static final int REMOTE_COMMAND_RESUME = 3;
-	public static final int REMOTE_COMMAND_CHANNEL = 4;
-	public static final int REMOTE_COMMAND_TIME = 5;
-	public static final int REMOTE_COMMAND_ID = 6;
-	public static final int REMOTE_COMMAND_FILE = 7;
-	public static final int REMOTE_COMMAND_TEXT = 8;
+  public static final int REMOTE_COMMAND_START = 0;
+  public static final int REMOTE_COMMAND_STOP = 1;
+  public static final int REMOTE_COMMAND_PAUSE = 2;
+  public static final int REMOTE_COMMAND_RESUME = 3;
+  public static final int REMOTE_COMMAND_CHANNEL = 4;
+  public static final int REMOTE_COMMAND_TIME = 5;
+  public static final int REMOTE_COMMAND_ID = 6;
+  public static final int REMOTE_COMMAND_FILE = 7;
+  public static final int REMOTE_COMMAND_TEXT = 8;
 
-	private ColorizeMsgPump msgPump = null;
-	
+  private ColorizeMsgPump msgPump = null;
+  
   // Properties...
   private Server server = null; // server associated with message
   protected Server getServer() { return server; }
@@ -143,34 +143,34 @@ public class ColorizePlugin implements Plugin
    * Plugin's Initialization hook called from LeafChat
    */
   @Override
-	public synchronized void init(PluginContext context, PluginLoadReporter reporter) throws GeneralException
-	{
-		context.requestMessages(UserCommandMsg.class, this);
-		
-		// Register unique MS Windows message to identify our communication
+  public synchronized void init(PluginContext context, PluginLoadReporter reporter) throws GeneralException
+  {
+    context.requestMessages(UserCommandMsg.class, this);
+    
+    // Register unique MS Windows message to identify our communication
     RWM_ColorizeNet = User32.INSTANCE.RegisterWindowMessage(YC_SIGNITURE);
     
-		msgPump = new ColorizeMsgPump(context); // Make window to handle WM_COPYDATA
+    msgPump = new ColorizeMsgPump(context); // Make window to handle WM_COPYDATA
 
-		// Examples of accessing an API:
+    // Examples of accessing an API:
     //PreferencesUI preferencesUI = context.getSingle(PreferencesUI.class);
-		//UI ui = context.getSingle(UI.class);    
+    //UI ui = context.getSingle(UI.class);    
     //IRCUI ircUI = context.getSingle(IRCUI.class);
     //messageDisplay = ircUI.getMessageDisplay(null);
     
     messageDisplay = null;
       
-		// For Windows 7 and up we need this to unblock reception of WM_COPYDATA from
-		// YahCoLoRiZe! Will throw an UnsatisfiedLinkError for XP!
-		//
-		// (Turns out we don't - but it might come in handy some day!)
-		//
-//		try {
+    // For Windows 7 and up we need this to unblock reception of WM_COPYDATA from
+    // YahCoLoRiZe! Will throw an UnsatisfiedLinkError for XP!
+    //
+    // (Turns out we don't - but it might come in handy some day!)
+    //
+//    try {
 //      if (!User32.INSTANCE.ChangeWindowMessageFilterEx(new HWND(msgPump.hComponent), User32.WM_COPYDATA, 
 //          User32.MSGFLT_ALLOW, null))
 //        JOptionPane.showMessageDialog(null, "YahCoLoRiZe plugin for LeafChat could not enable data-communications!",
 //            "Info!", JOptionPane.WARNING_MESSAGE);
-//		} catch(Exception e) {
+//    } catch(Exception e) {
 //    }
     
     if (Platform.is64Bit())
@@ -188,20 +188,20 @@ public class ColorizePlugin implements Plugin
           "Info", JOptionPane.WARNING_MESSAGE);
       
     // ColorizeWindow is the initiator of a WM_COPYDATA received event.
-		// Here, we add a responder to take action when the event occurs.
+    // Here, we add a responder to take action when the event occurs.
     Responder responder = new Responder();
-		msgPump.addListener(responder);
-		
+    msgPump.addListener(responder);
+    
     // Send our version and handle to YahCoLoRiZe
     send(msgPump.hComponent, new CNS(REMOTE_COMMAND_ID, "", YC_VERSION));
-	}
+  }
 
   /**
    * Called when the user types in a command such as "/cx text to process"
    */
-	public void msg(UserCommandMsg msg)
-	{
-	  if (msg == null || msgPump == null) return;
+  public void msg(UserCommandMsg msg)
+  {
+    if (msg == null || msgPump == null) return;
 
     this.messageDisplay = msg.getMessageDisplay();
     this.server = msg.getServer();
@@ -215,7 +215,7 @@ public class ColorizePlugin implements Plugin
     int iCommandID = -1, iCommandData = -1;
     
     if(cmd.equals(C_SEND))
-		{
+    {
       try {
         updateGlobals(msg);
         
@@ -238,7 +238,7 @@ public class ColorizePlugin implements Plugin
         
       } catch(Exception e) {
       }
-		}
+    }
     else if(cmd.equals(C_PLAY))
     {
       try {
@@ -342,7 +342,7 @@ public class ColorizePlugin implements Plugin
       }
     }
   }
-	
+  
   /**
    * Update global properties after user types a message
    */
@@ -371,19 +371,19 @@ public class ColorizePlugin implements Plugin
   }
   
   @Override
-	public void close() throws GeneralException	{
-		if(msgPump!=null) msgPump.close();			
-	}
-	
-	public void windowClosed() {
-	  msgPump=null;
-	}
-	
+  public void close() throws GeneralException  {
+    if(msgPump!=null) msgPump.close();      
+  }
+  
+  public void windowClosed() {
+    msgPump=null;
+  }
+  
   @Override
-	public String toString() {
-	  // Used to display in system log etc.
-		return "YahCoLoRiZe plugin for LeafChat";
-	}	
+  public String toString() {
+    // Used to display in system log etc.
+    return "YahCoLoRiZe plugin for LeafChat";
+  }  
   /* 
    * Marshal the COLORIZENET and COPYDATA structs to Native Memory
    * and send to YahCoLoRiZe

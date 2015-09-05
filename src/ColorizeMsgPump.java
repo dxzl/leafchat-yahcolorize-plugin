@@ -21,39 +21,39 @@ public class ColorizeMsgPump
   public Pointer hWindow = null;
   public Pointer hComponent = null;
   public HWND hColorize = null;
-	
+  
   private ColorizePlugin plugin;
   private ColorizeMsgPump msgPump;
-	
+  
   protected static User32.WindowProc proc = null;
   
   private JFrame frame = null;
-	
+  
   List<RxListener> listeners = new ArrayList<RxListener>();
 
   ColorizeMsgPump(PluginContext context)
   {
-		plugin=(ColorizePlugin)context.getPlugin();
+    plugin=(ColorizePlugin)context.getPlugin();
 
-		msgPump = this; // save to pass to the event handler from WndProc!
+    msgPump = this; // save to pass to the event handler from WndProc!
 
-  	try
-  	{
+    try
+    {
       frame = new JFrame();
 //      frame.setName(""); does this set the classname? SunAwtFrame is default      
       frame.setTitle("ColorizeMsgPump"); // need this to be found by FindWindow      
-  	  frame.setLocation(-100000, -100000);
+      frame.setLocation(-100000, -100000);
       frame.setEnabled(false);
       frame.setVisible(true); // Have to show then hide it...
-  	  frame.setVisible(false);
+      frame.setVisible(false);
       
-  		// Set "handle" to the JFrame window's handle
+      // Set "handle" to the JFrame window's handle
       this.hComponent = Native.getWindowPointer(frame);      
-  	} 
-  	catch (Exception e)
-  	{
-  		e.printStackTrace();
-  	}
+    } 
+    catch (Exception e)
+    {
+      e.printStackTrace();
+    }
         
     try
     {
@@ -154,7 +154,7 @@ public class ColorizeMsgPump
       e.printStackTrace();
     }
   }
-	
+  
   public void addListener(RxListener toAdd)
   {
     listeners.add(toAdd);
@@ -175,16 +175,16 @@ public class ColorizeMsgPump
   
   void focus()
   {
-		frame.requestFocus();
-	}
-	
-	void close()
-	{
-		frame.dispose();
-	}
-	
-	void windowClosed()
-	{
-		plugin.windowClosed();
-	}
+    frame.requestFocus();
+  }
+  
+  void close()
+  {
+    frame.dispose();
+  }
+  
+  void windowClosed()
+  {
+    plugin.windowClosed();
+  }
 }
