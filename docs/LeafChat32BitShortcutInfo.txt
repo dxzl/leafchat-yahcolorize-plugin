@@ -1,0 +1,24 @@
+I ran LeafChat with my plugin on Windows XP on a 32-bit Dell just fine. But when I ran it on my Windows 8
+64-bit OS and 64-bit machine LeafChat failed when loading my plugin. It fails because the Java Native Access
+I use in the plugin was loading in 64-bit mode.
+
+I learned that you can pass "-d32" to force a program to load in the 32-bit Java Virtual Machine. But you still
+need a path to the correct (32-bit) VM in the shortcut that launches LeafChat.
+
+The default LeafChat installation's shortcut target is:
+
+C:\ProgramData\Oracle\Java\javapath\javaw.exe -jar leafChat.jar
+
+...which is a SHORTCUT to C:\Program Files\Java\jre1.8.0_45\bin\javaw.exe
+...which is the 64-bit VM - NOT what I want for LeafCHat to run a 32-bit message-dispatcher DLL
+that can talk to my 32-bit YahCoLoRiZe via WM_COPYDATA messages!
+
+SO...
+
+My NEW (working) Java shortcut target:
+
+"C:\Program Files (x86)\Java\jre1.8.0_45\bin\javaw.exe" -jar -d32 leafChat.jar
+
+Start in:
+
+"C:\Program Files (x86)\leafChat 2"
