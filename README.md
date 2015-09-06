@@ -10,8 +10,11 @@ Get LeafChat and all the plugins for it:
 https://github.com/quen/leafchat
 http://www.leafdigital.com/software/leafchat/
 
-java Native Access:
+Java Native Access:
 https://github.com/java-native-access/jna/
 
-java SDK:
+Java SDK:
 http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html
+
+Java:
+https://java.com/en/download/
